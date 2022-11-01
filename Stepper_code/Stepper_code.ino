@@ -23,10 +23,6 @@ void loop() {
     Serial.print("threshold set as: ");
     Serial.print(threshold);
     Serial.println(" m");
-  
-    Serial.print("threshold set as: ");
-    Serial.print(threshold);
-    Serial.println(" m");
     threshold_flag = 1;
   }
   else {
