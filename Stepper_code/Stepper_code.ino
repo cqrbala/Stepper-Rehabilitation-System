@@ -13,13 +13,13 @@ int origin_flag = 0;
 int num_steps = 0; 
 
 // Keeps track of which side of the origin the step is present (Prevents a single step being counted more than once)
-int sign_origin;
+int sign_origin = 0;
 
 // Sets the sign_flag on the first step, this allows the flexibility to account for the patient starting with either foot
 int sign_flag = 0;
 
 // Min displacement required to complete a step
-double step_threshold = 1.1;
+double step_threshold = 0.03;
 
 void setup() {
   pinMode(trigger_pin, OUTPUT);
@@ -37,45 +37,53 @@ void loop() {
   if (origin_flag == 0) {
 
     // origin point is being set
-
     origin = pulseIn(echo_pin, 1);
     origin = (origin / 2000000)*sound_speed;
     origin_flag = 1;
-
+    Serial.print("Origin set as: ");
+    Serial.println(origin);
   }
   else {
 
-    
     // Processing of the ultrasonic sensor's input
     double duration, distance,step_displacement;
     duration = pulseIn(echo_pin, 1);
     duration = duration / 2000000; // now duration is in seconds
     distance = duration*sound_speed;
 
+    Serial.print("Ultrasonic sensor data is: ");
+    Serial.println(distance);
+    Serial.print("sign flag is: ");
+    Serial.println(sign_origin);
+
     // Reading EMG sensor input (gets the voltage in milliVolts)
     float sensorValue = analogRead(A10);
     float millivolt = (sensorValue/1023)*5;
 
     step_displacement = distance - origin;
-    if(sign_flag == 0) {
-      if(step_displacement < 0) {
-        sign_origin = -1;
+    Serial.print("Distance is: ");
+    Serial.println(step_displacement);
+    
+    
+    if(abs(step_displacement) >= step_threshold) {
+      if(sign_flag ==0) {
         sign_flag = 1;
-
+        if(step_displacement < 0) sign_origin = 1;
+        else sign_origin = -1;
+        num_steps += 1;
       }
-      else if (step_displacement > 0) {
-        sign_origin = 1;
-        sign_flag = 1;
-      }
-    }
-    if(sign_flag) {
-      if(abs(step_displacement) >= step_threshold && step_displacement * sign_origin > 0) {
+      else if (step_displacement * sign_origin > 0) {
         sign_origin *= -1;
-        num_steps += 1
-      } 
-    }
+        num_steps += 1;
+        Serial.print("Number of steps: ");
+        Serial.println(num_steps);
+        Serial.print("Distance is: ");
+        Serial.println(step_displacement);
+      }  
+    } 
+    
 
   }
-   
-  delay(500);
+
+  delay(3000);
 }
