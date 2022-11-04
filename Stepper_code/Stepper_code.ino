@@ -71,6 +71,8 @@ void loop() {
         if(step_displacement < 0) sign_origin = 1;
         else sign_origin = -1;
         num_steps += 1;
+        Serial.print("One small step for Man, a large leap for mankind: ");
+        Serial.println(num_steps);
       }
       else if (step_displacement * sign_origin > 0) {
         sign_origin *= -1;
