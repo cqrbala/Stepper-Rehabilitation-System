@@ -56,10 +56,16 @@ void loop() {
     Serial.print("sign flag is: ");
     Serial.println(sign_origin);
 
-    // Reading EMG sensor input (gets the voltage in milliVolts)
-    float sensorValue = analogRead(A10);
+    Reading EMG sensor input (gets the voltage in milliVolts)
+    float sensorValue = analogRead(0);
+    sensorValue = analogRead(0);
     float millivolt = (sensorValue/1023)*5;
 
+    Serial.print("Muscle sensor value: ");
+    Serial.println(sensorValue);
+    Serial.print("millivolts: ");
+    Serial.println(millivolt);
+ 
     step_displacement = distance - origin;
     Serial.print("Distance is: ");
     Serial.println(step_displacement);
@@ -71,7 +77,7 @@ void loop() {
         if(step_displacement < 0) sign_origin = 1;
         else sign_origin = -1;
         num_steps += 1;
-        Serial.print("One small step for Man, a large leap for mankind: ");
+        Serial.print("One small step for Man, one large leap for mankind: ");
         Serial.println(num_steps);
       }
       else if (step_displacement * sign_origin > 0) {
@@ -87,5 +93,5 @@ void loop() {
 
   }
 
-  delay(3000);
+  delay(500);
 }

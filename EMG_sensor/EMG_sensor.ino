@@ -1,7 +1,7 @@
-int Sensor_pin = A3; // the analog pin connected to the sensor
+int Sensor_pin = 0; // the analog pin connected to the sensor
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 void loop()
 {
