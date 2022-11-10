@@ -7,7 +7,7 @@ void loop()
 {
 
 int value = analogRead(Sensor_pin);// function to read analog voltage from sensor
-//value = analogRead(Sensor_pin);
+value = analogRead(Sensor_pin);
 Serial.print("sensor value is: ");
 Serial.println(value);
 delay(100); // to make the LED visible
