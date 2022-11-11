@@ -51,9 +51,9 @@ void loop()
 }
 
 void mqttPublish(long pubChannelID, int force) {
-  String topic, data;
+  String topic, dataString;
   topic = "channels/" + String(pubChannelID) + "/publish";
-  data = "field3=" + String(force);
+  dataString = "field3=" + String(force);
   Serial.println(data);
   mqttClient.publish(topic.c_str(), dataString.c_str());
 }
