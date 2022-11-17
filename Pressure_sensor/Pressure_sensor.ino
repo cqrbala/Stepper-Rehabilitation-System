@@ -68,7 +68,7 @@ void mqttPublish(long pubChannelID, int force) {
   mqttClient.publish(topic.c_str(), dataString.c_str());
 }
 
-void createCI(String &val)
+void createCIFSR(String &val)
 {
   HTTPClient http;
   http.begin(om2mserver + ae + "/" + cnt + "/");
