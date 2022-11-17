@@ -5,6 +5,8 @@
 #include <ArduinoJson.h>
 #include "HTTPClient.h"
 
+
+// Defining the pins we will be using to take inputs from the sensors we are using
 #define trigger_pin 33
 #define echo_pin 32
 #define sound_speed 343
@@ -12,9 +14,11 @@ int EMG_Sensor_pin = 23;
 int Sensor_pin = 34;
 int value;
 
+// Network name and password to connect to WiFi, ensure the network is 2.4 GHz
 char ssid[] = "Arnav";
 char password[] = "pranjal13";
 
+// All variables required to connect and upload data to ThingSpeak
 const char* server = "mqtt3.thingspeak.com";
 char mqttUserName[] = "mwa0000026745613";
 char mqttPass[] = "THZAMM30249U49OK"; //Change to your MQTT API key from Account > MyProfile on Thingspeak.
@@ -22,6 +26,7 @@ int writeChannelID = 1925729;
 char writeAPIKey[] = "OLVQ0WA9GL4CLREE";
 char readAPIKey[] = "M5SLOVSH2YRWMURX";
 
+// All variables required to connect and upload data to OneM2M
 String cse_ip = "192.168.199.15"; // YOUR IP from ipconfig/ifconfig
 String cse_port = "8080";
 String om2mserver = "http://" + cse_ip + ":" + cse_port + "/~/in-cse/in-name/";
@@ -114,6 +119,7 @@ void loop()  {
     Serial.print("millivolts: ");
     Serial.println(millivolt);
 
+    // Reading FSR value
     value = analogRead(Sensor_pin);
     Serial.print("sensor value is: ");
     Serial.println(value);
@@ -121,7 +127,6 @@ void loop()  {
     step_displacement = distance - origin;
     Serial.print("Distance is: ");
     Serial.println(step_displacement);
-    
     
     if(abs(step_displacement) >= step_threshold) {
       if(sign_flag ==0) {
@@ -142,13 +147,13 @@ void loop()  {
       }  
     } 
   }
-//  String value_str = String(value);
-//  String num_steps_str = String(num_steps);
-//  String sensorValue_str = String(sensorValue);
-//  mqttPublish(writeChannelID, sensorValue, num_steps, value);
-//  createCISteps(num_steps_str);
-//  createCIEMG(sensorValue_str);
-//  createCIFSR(value_str);
+  String value_str = String(value);
+  String num_steps_str = String(num_steps);
+  String sensorValue_str = String(sensorValue);
+  mqttPublish(writeChannelID, sensorValue, num_steps, value);
+  createCISteps(num_steps_str);
+  createCIEMG(sensorValue_str);
+  createCIFSR(value_str);
   delay(500);
 }
 
