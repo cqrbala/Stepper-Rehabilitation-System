@@ -61,27 +61,27 @@ void setup() {
   WiFi.begin(ssid, password);
   Serial.begin(115200);
   
-//  while (WiFi.status() != WL_CONNECTED)
-//  {
-//    delay(500);
-//    Serial.println("Not connected to WiFi.");
-//  }
-//  Serial.println("WiFi connected.");
-//  Serial.println("IP address: ");
-//  Serial.println(WiFi.localIP());
+ while (WiFi.status() != WL_CONNECTED)
+ {
+   delay(500);
+   Serial.println("Not connected to WiFi.");
+ }
+ Serial.println("WiFi connected.");
+ Serial.println("IP address: ");
+ Serial.println(WiFi.localIP());
 
   // Setting up MQTT Broker details
   mqttClient.setServer(server, 1883);
 }
 
 void loop()  {
-//  while(mqttClient.connected() == NULL)
-//  {
-//    Serial.println("MQTT not connected");
-//    Serial.println(mqttClient.connect("KSYxFSI0BicuKikKEyYaEjU","KSYxFSI0BicuKikKEyYaEjU","Na4N9kkuVLSjuO1xucSvUd60"));
-//  }
-//  Serial.println("MQTT connected");
-//  mqttClient.loop(); // maintain connection
+  while(mqttClient.connected() == NULL)
+  {
+    Serial.println("MQTT not connected");
+    Serial.println(mqttClient.connect("KSYxFSI0BicuKikKEyYaEjU","KSYxFSI0BicuKikKEyYaEjU","Na4N9kkuVLSjuO1xucSvUd60"));
+  }
+  Serial.println("MQTT connected");
+  mqttClient.loop(); // maintain connection
 
   digitalWrite(trigger_pin, 1);
   delayMicroseconds(10);
@@ -98,32 +98,29 @@ void loop()  {
   else {
     // Processing of the ultrasonic sensor's input    
     duration = pulseIn(echo_pin, 1);
-    duration = duration / 2000000; // now duration is in seconds
+    duration = duration / 2000000; 
     distance = duration*sound_speed;
 
-//    Serial.print("Ultrasonic sensor data is: ");
-//    Serial.println(distance);
-    // Serial.print("sign flag is: ");
-    // Serial.println(sign_origin);
+    Serial.print("Ultrasonic sensor data is: ");
+    Serial.println(distance);
 
     // Reading EMG sensor input (gets the voltage in milliVolts)
     sensorValue = analogRead(EMG_Sensor_pin);
     sensorValue = analogRead(EMG_Sensor_pin);
+    millivolt = (sensorValue/1023)*5;
 
     Serial.print("Muscle sensor value: ");
     Serial.println(sensorValue);
-    // Serial.print("millivolts: ");
-    // Serial.println(millivolt);
-;
-//    millivolt = (sensorValue/1023)*5;
+    Serial.print("millivolts: ");
+    Serial.println(millivolt);
 
-//    value = analogRead(Sensor_pin);  // function to read analog voltage from sensor
-//     Serial.print("sensor value is: ");
-//     Serial.println(value);
- 
+    value = analogRead(Sensor_pin);
+    Serial.print("sensor value is: ");
+    Serial.println(value);
+    
     step_displacement = distance - origin;
-//    Serial.print("Distance is: ");
-//    Serial.println(step_displacement);
+    Serial.print("Distance is: ");
+    Serial.println(step_displacement);
     
     
     if(abs(step_displacement) >= step_threshold) {
@@ -132,16 +129,16 @@ void loop()  {
         if(step_displacement < 0) sign_origin = 1;
         else sign_origin = -1;
         num_steps += 1;
-//        Serial.print("One small step for Man, one large leap for mankind: ");
-//        Serial.println(num_steps);
+        Serial.print("One small step for Man, one large leap for mankind: ");
+        Serial.println(num_steps);
       }
       else if (step_displacement * sign_origin > 0) {
         sign_origin *= -1;
         num_steps += 1;
-//        Serial.print("Number of steps: ");
-//        Serial.println(num_steps);
-//        Serial.print("Distance is: ");
-//        Serial.println(step_displacement);
+        Serial.print("Number of steps: ");
+        Serial.println(num_steps);
+        Serial.print("Distance is: ");
+        Serial.println(step_displacement);
       }  
     } 
   }
