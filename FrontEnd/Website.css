@@ -1,0 +1,40 @@
+body {
+    background-color: antiquewhite;
+    color:brown;
+    font-family: monospace;
+    flex: auto;
+}
+
+img {
+    height: 42%;
+    width: 42%;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-bottom: 50px;
+}
+
+iframe {
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 40px;
+}
+
+p {
+    font-size: 40px; 
+    text-decoration: underline;
+    font-weight:bold ;
+}
+
+#Collected_data {
+    text-align: center;
+    align-items: center;
+}
+
+#Current_values {
+    text-align: center;
+    align-items: center;
+}
+
+table {
+    width: 100%;
+}
