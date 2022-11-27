@@ -11,6 +11,6 @@ cnt = "node1"
 # uri_cnt = uri_ae + "/" + cnt
 # create_data_cin(uri_cnt, "ESW")
 
-delete(uri_cse, "FSR")
-delete(uri_cse, "Number_Of_Steps")
-delete(uri_cse, "EMG ")
+uri_ae = uri_cse + "/" + "FSR"
+
+delete(uri_ae)
