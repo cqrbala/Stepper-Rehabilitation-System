@@ -9,7 +9,7 @@
 #define trigger_pin 33
 #define echo_pin 32
 #define sound_speed 343
-int EMG_Sensor_pin = 23;
+int EMG_Sensor_pin = 35;
 int Sensor_pin = 34;
 int value;
 
@@ -26,17 +26,11 @@ char writeAPIKey[] = "OLVQ0WA9GL4CLREE";
 char readAPIKey[] = "M5SLOVSH2YRWMURX";
 
 // All variables required to connect and upload data to OneM2M
-String cse_ip = "192.168.199.15"; // YOUR IP from ipconfig/ifconfig
+String cse_ip = "192.168.103.15"; // YOUR IP from ipconfig/ifconfig
 String cse_port = "8080";
 String om2mserver = "http://" + cse_ip + ":" + cse_port + "/~/in-cse/in-name/";
-String ae = "Stepper Data";
+String ae = "Stepper_Data";
 String cnt = "node1";
-// String ae1 = "Number_Of_Steps";
-// String cnt1 = "node1";
-// String ae2 = "EMG";
-// String cnt2 = "node1";
-// String ae3 = "FSR";
-// String cnt3 = "node1";
 
 WiFiClient client;                             // Instantiating WiFiClient object
 PubSubClient mqttClient(server, 1883, client); // Instantiating Publisher Sub-Client Object
@@ -74,7 +68,6 @@ void setup()
     Serial.println("Not connected to WiFi.");
   }
   Serial.println("WiFi connected.");
-  Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
   // Setting up MQTT Broker details
@@ -88,7 +81,6 @@ void loop()
     Serial.println("MQTT not connected");
     Serial.println(mqttClient.connect("KSYxFSI0BicuKikKEyYaEjU", "KSYxFSI0BicuKikKEyYaEjU", "Na4N9kkuVLSjuO1xucSvUd60"));
   }
-  Serial.println("MQTT connected");
   mqttClient.loop(); // maintain connection
 
   digitalWrite(trigger_pin, 1);
@@ -111,8 +103,8 @@ void loop()
     duration = duration / 2000000;
     distance = duration * sound_speed;
 
-    Serial.print("Ultrasonic sensor data is: ");
-    Serial.println(distance);
+//    Serial.print("Ultrasonic sensor data is: ");
+//    Serial.println(distance);
 
     // Reading EMG sensor input (gets the voltage in milliVolts)
     sensorValue = analogRead(EMG_Sensor_pin);
@@ -121,17 +113,15 @@ void loop()
 
     Serial.print("Muscle sensor value: ");
     Serial.println(sensorValue);
-    Serial.print("millivolts: ");
-    Serial.println(millivolt);
 
     // Reading FSR value
     value = analogRead(Sensor_pin);
-    Serial.print("sensor value is: ");
+    Serial.print("Force sensor value is: ");
     Serial.println(value);
 
     step_displacement = distance - origin;
-    Serial.print("Distance is: ");
-    Serial.println(step_displacement);
+//    Serial.print("Displacement is: ");
+//    Serial.println(step_displacement);
 
     if (abs(step_displacement) >= step_threshold)
     {
@@ -152,7 +142,7 @@ void loop()
         num_steps += 1;
         Serial.print("Number of steps: ");
         Serial.println(num_steps);
-        Serial.print("Distance is: ");
+        Serial.print("Displacement is: ");
         Serial.println(step_displacement);
       }
     }
@@ -160,13 +150,11 @@ void loop()
   String value_str = String(value);
   String num_steps_str = String(num_steps);
   String sensorValue_str = String(sensorValue);
-  String Concatenated = value_str + "," + num_steps_str + "," + sensorValue_str;
+  String Concatenated = "[" + value_str + ", " + num_steps_str + ", " + sensorValue_str + "]";
   mqttPublish(writeChannelID, sensorValue, num_steps, value);
   createCIStepper(Concatenated);
-  // createCISteps(num_steps_str);
-  // createCIEMG(sensorValue_str);
-  // createCIFSR(value_str);
-  delay(500);
+  Serial.println("......................................");
+  delay(1000);
 }
 
 void mqttPublish(long pubChannelID, double EMG, int steps, int FSR)
@@ -178,9 +166,6 @@ void mqttPublish(long pubChannelID, double EMG, int steps, int FSR)
   data2 = "field2=" + String(steps);
   topic3 = "channels/" + String(pubChannelID) + "/publish";
   data3 = "field3=" + String(FSR);
-  Serial.println(data1);
-  Serial.println(data2);
-  Serial.println(data3);
   mqttClient.publish(topic1.c_str(), data1.c_str());
   mqttClient.publish(topic2.c_str(), data2.c_str());
   mqttClient.publish(topic3.c_str(), data3.c_str());
@@ -191,69 +176,15 @@ void createCIStepper(String &val)
   HTTPClient http;
   http.begin(om2mserver + ae + "/" + cnt + "/");
 
-  http.addHeader("X-M2M-Origin", "admin:admin");
+  http.addHeader("X-M2M-Origin", "Team-17:eA#sCD:@@UNKm");
   http.addHeader("Content-Type", "application/json;ty=4");
+  http.addHeader("Content-Length", "100");
 
-  int code = http.POST("{\"m2m:cin\": {\"cnf\":\"application/json\",\"con\": " + String(val) + "}}");
+  int code = http.POST("{\"m2m:cin\": {\"cnf\":\"application/json\",\"con\": " + val + "}}");
 
-  Serial.println(code);
   if (code == -1)
   {
-    Serial.println("UNABLE TO CONNECT TO THE SERVER");
+    Serial.println("UNABLE TO CONNECT TO THE OM2M SERVER");
   }
   http.end();
 }
-
-// void createCISteps(String &val)
-// {
-//   HTTPClient http;
-//   http.begin(om2mserver + ae1 + "/" + cnt1 + "/");
-
-//   http.addHeader("X-M2M-Origin", "admin:admin");
-//   http.addHeader("Content-Type", "application/json;ty=4");
-
-//   int code = http.POST("{\"m2m:cin\": {\"cnf\":\"application/json\",\"con\": " + String(val) + "}}");
-
-//   Serial.println(code);
-//   if (code == -1)
-//   {
-//     Serial.println("UNABLE TO CONNECT TO THE SERVER");
-//   }
-//   http.end();
-// }
-
-// void createCIEMG(String &val)
-// {
-//   HTTPClient http;
-//   http.begin(om2mserver + ae2 + "/" + cnt2 + "/");
-
-//   http.addHeader("X-M2M-Origin", "admin:admin");
-//   http.addHeader("Content-Type", "application/json;ty=4");
-
-//   int code = http.POST("{\"m2m:cin\": {\"cnf\":\"application/json\",\"con\": " + String(val) + "}}");
-
-//   Serial.println(code);
-//   if (code == -1)
-//   {
-//     Serial.println("UNABLE TO CONNECT TO THE SERVER");
-//   }
-//   http.end();
-// }
-
-// void createCIFSR(String &val)
-// {
-//   HTTPClient http;
-//   http.begin(om2mserver + ae3 + "/" + cnt3 + "/");
-
-//   http.addHeader("X-M2M-Origin", "admin:admin");
-//   http.addHeader("Content-Type", "application/json;ty=4");
-
-//   int code = http.POST("{\"m2m:cin\": {\"cnf\":\"application/json\",\"con\": " + String(val) + "}}");
-
-//   Serial.println(code);
-//   if (code == -1)
-//   {
-//     Serial.println("UNABLE TO CONNECT TO THE SERVER");
-//   }
-//   http.end();
-// }
