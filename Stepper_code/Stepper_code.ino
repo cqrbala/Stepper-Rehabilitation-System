@@ -26,11 +26,11 @@ char writeAPIKey[] = "OLVQ0WA9GL4CLREE";
 char readAPIKey[] = "M5SLOVSH2YRWMURX";
 
 // All variables required to connect and upload data to OneM2M
-String cse_ip = "192.168.103.15"; // YOUR IP from ipconfig/ifconfig
-String cse_port = "8080";
-String om2mserver = "http://" + cse_ip + ":" + cse_port + "/~/in-cse/in-name/";
-String ae = "Stepper_Data";
-String cnt = "node1";
+String cse_ip = "esw-onem2m.iiit.ac.in"; // YOUR IP from ipconfig/ifconfig
+int cse_port = 443;
+String om2mserver = "https://" + cse_ip + ":" + String() + cse_port + "/~/in-cse/in-name/";
+String ae = "Team-17";
+String cnt = "Node-1/Data";
 
 WiFiClient client;                             // Instantiating WiFiClient object
 PubSubClient mqttClient(server, 1883, client); // Instantiating Publisher Sub-Client Object
@@ -150,7 +150,7 @@ void loop()
   String value_str = String(value);
   String num_steps_str = String(num_steps);
   String sensorValue_str = String(sensorValue);
-  String Concatenated = "[" + value_str + ", " + num_steps_str + ", " + sensorValue_str + "]";
+  String Concatenated = "[ " + value_str + ", " + num_steps_str + ", " + sensorValue_str + " ]";
   mqttPublish(writeChannelID, sensorValue, num_steps, value);
   createCIStepper(Concatenated);
   Serial.println("......................................");
@@ -161,11 +161,11 @@ void mqttPublish(long pubChannelID, double EMG, int steps, int FSR)
 {
   String topic1, topic2, data1, data2, topic3, data3;
   topic1 = "channels/" + String(pubChannelID) + "/publish";
-  data1 = "field1=" + String(EMG);
+  data1 = "field1=" + String(FSR);
   topic2 = "channels/" + String(pubChannelID) + "/publish";
   data2 = "field2=" + String(steps);
   topic3 = "channels/" + String(pubChannelID) + "/publish";
-  data3 = "field3=" + String(FSR);
+  data3 = "field3=" + String(EMG);
   mqttClient.publish(topic1.c_str(), data1.c_str());
   mqttClient.publish(topic2.c_str(), data2.c_str());
   mqttClient.publish(topic3.c_str(), data3.c_str());
@@ -173,14 +173,17 @@ void mqttPublish(long pubChannelID, double EMG, int steps, int FSR)
 
 void createCIStepper(String &val)
 {
+  Serial.println(val);
   HTTPClient http;
   http.begin(om2mserver + ae + "/" + cnt + "/");
 
-  http.addHeader("X-M2M-Origin", "Team-17:eA#sCD:@@UNKm");
+  http.addHeader("X-M2M-Origin", "eA#sCD:@@UNKm");
   http.addHeader("Content-Type", "application/json;ty=4");
   http.addHeader("Content-Length", "100");
 
-  int code = http.POST("{\"m2m:cin\": {\"cnf\":\"application/json\",\"con\": " + val + "}}");
+  String req_data = String() + "{\"m2m:cin\": {" + "\"con\": \"" + val + "\"," + "\"lbl\": \"" + "Stepper Data" + "\"," + "\"cnf\": \"text\"" + "}}";
+
+  int code = http.POST(req_data);
 
   if (code == -1)
   {
