@@ -103,8 +103,8 @@ void loop()
     duration = duration / 2000000;
     distance = duration * sound_speed;
 
-//    Serial.print("Ultrasonic sensor data is: ");
-//    Serial.println(distance);
+    //    Serial.print("Ultrasonic sensor data is: ");
+    //    Serial.println(distance);
 
     // Reading EMG sensor input (gets the voltage in milliVolts)
     sensorValue = analogRead(EMG_Sensor_pin);
@@ -120,8 +120,8 @@ void loop()
     Serial.println(value);
 
     step_displacement = distance - origin;
-//    Serial.print("Displacement is: ");
-//    Serial.println(step_displacement);
+    //    Serial.print("Displacement is: ");
+    //    Serial.println(step_displacement);
 
     if (abs(step_displacement) >= step_threshold)
     {
