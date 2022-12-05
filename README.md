@@ -1,4 +1,5 @@
 # Stepper-Rehabilitation-System
+## Contributors: Balakumar, Haran, Arnav
 
 A system deployed on a stepper that is found in any gym, the system is used for patients who have had lower limb muscle atrophy due to stroke and helps them in their recovery process.
 
